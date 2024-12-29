@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\BugTicketController;
+use App\Http\Controllers\UserController;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -50,3 +51,8 @@ Route::apiResource('tasks', TaskController::class);
 
 // BugTicket Routes
 Route::apiResource('bugs', BugTicketController::class);
+
+// routes/api.php
+
+
+Route::post('users', [UserController::class, 'store']); // POST request to create a new user

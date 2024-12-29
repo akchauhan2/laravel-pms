@@ -15,17 +15,13 @@ class CreateBugTicketsTable extends Migration
     public function up()
     {
         Schema::create('bug_tickets', function (Blueprint $table) {
-            $table->id('bug_id');
-            $table->text('description');
+            $table->id(); // This automatically creates 'bug_id' as an auto-incrementing primary key.
+            $table->string('description');
             $table->string('status');
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('assigned_to');
-            $table->text('screenshot')->nullable();
+            $table->string('screenshot');
             $table->timestamps();
-
-            // Add foreign keys
-            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
-            $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
         });
     }
 

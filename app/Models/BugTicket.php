@@ -10,12 +10,11 @@ class BugTicket extends Model
     use HasFactory;
 
     protected $fillable = [
-        'bug_id',
         'description',
         'status',
         'project_id',
         'assigned_to',
-        'screenshot'
+        'screenshot',
     ];
 
     public function project()
