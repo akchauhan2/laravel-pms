@@ -56,3 +56,5 @@ Route::apiResource('bugs', BugTicketController::class);
 
 
 Route::post('users', [UserController::class, 'store']); // POST request to create a new user
+
+//tbd: DiscussionController
