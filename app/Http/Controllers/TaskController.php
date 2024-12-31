@@ -11,7 +11,7 @@ class TaskController extends Controller
     // Get all tasks
     public function index()
     {
-        return response()->json(Task::all());
+        return response()->json(Task::with(['project', 'assignedUser'])->get());
     }
 
     // Store a new task
@@ -24,7 +24,7 @@ class TaskController extends Controller
     // Show a single task by ID
     public function show($id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::with(['project', 'assignedUser'])->findOrFail($id);
         return response()->json($task);
     }
 

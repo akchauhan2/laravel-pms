@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\BugTicketController;
+use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\UserController;
 
 use App\Models\User;
@@ -32,11 +33,6 @@ Route::post('login', function (Request $request) {
 
     return response()->json(['message' => 'Unauthorized'], 401);
 });
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -58,3 +54,5 @@ Route::apiResource('bugs', BugTicketController::class);
 Route::post('users', [UserController::class, 'store']); // POST request to create a new user
 
 //tbd: DiscussionController
+Route::apiResource('discussions', DiscussionController::class);
+Route::get('projects/{project}/discussions', [DiscussionController::class, 'getDiscussionsByProject']);

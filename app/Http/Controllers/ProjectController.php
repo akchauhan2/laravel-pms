@@ -13,11 +13,18 @@ class ProjectController extends Controller
         return response()->json(Project::all());
     }
 
-    // Store a new project
+    // Store a new project or update an existing project if ID is present
     public function store(Request $request)
     {
-        $project = Project::create($request->all());
-        return response()->json($project, 201); // 201 Created
+        $data = $request->all();
+        if (isset($data['id'])) {
+            $project = Project::findOrFail($data['id']);
+            $project->update($data);
+            return response()->json(['successFlag' => true, 'message' => 'Updated Successfully', 'data' => $project]);
+        } else {
+            $project = Project::create($data);
+            return response()->json(['successFlag' => true, 'message' => 'Created Successfully', 'data' => $project], 201); // 201 Created
+        }
     }
 
     // Show a single project by ID
@@ -32,7 +39,7 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         $project->update($request->all());
-        return response()->json($project);
+        return response()->json(['successFlag' => true, 'message' => 'Updated Successfully', 'data' => $project]);
     }
 
     // Delete a project
@@ -40,6 +47,6 @@ class ProjectController extends Controller
     {
         $project = Project::findOrFail($id);
         $project->delete();
-        return response()->json(null, 204); // 204 No Content
+        return response()->json(['successFlag' => true, 'message' => 'Deleted Successfully', 'data' => null], 200); // 204 No Content
     }
 }
