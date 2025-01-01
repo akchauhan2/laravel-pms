@@ -7,13 +7,17 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    // Get all projects
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
+
     public function index()
     {
         return response()->json(Project::all());
     }
 
-    // Store a new project or update an existing project if ID is present
     public function store(Request $request)
     {
         $data = $request->all();
@@ -30,8 +34,7 @@ class ProjectController extends Controller
     // Show a single project by ID
     public function show($id)
     {
-        $project = Project::findOrFail($id);
-        return response()->json($project);
+        return response()->json(Project::findOrFail($id));
     }
 
     // Update an existing project

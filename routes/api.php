@@ -8,6 +8,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\BugTicketController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -22,37 +23,26 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::post('login', function (Request $request) {
-    $user = User::where('email', $request->email)->first();
+Route::post('/login', [AuthController::class, 'login']);
 
-    if ($user && Hash::check($request->password, $user->password)) {
-        return response()->json([
-            'token' => $user->createToken('MyApp')->plainTextToken,
-        ]);
-    }
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
-    return response()->json(['message' => 'Unauthorized'], 401);
+    // Project Routes
+    Route::apiResource('projects', ProjectController::class);
+
+    // Task Routes
+    Route::apiResource('tasks', TaskController::class);
+
+    // BugTicket Routes
+    Route::apiResource('bugs', BugTicketController::class);
+
+    // User Routes
+    Route::post('users', [UserController::class, 'store']);
+
+    // Discussion Routes
+    Route::apiResource('discussions', DiscussionController::class);
+    Route::get('projects/{project}/discussions', [DiscussionController::class, 'getDiscussionsByProject']);
 });
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-// Project Routes
-Route::apiResource('projects', ProjectController::class);
-
-// Task Routes
-Route::apiResource('tasks', TaskController::class);
-
-// BugTicket Routes
-Route::apiResource('bugs', BugTicketController::class);
-
-// routes/api.php
-
-
-Route::post('users', [UserController::class, 'store']); // POST request to create a new user
-
-//tbd: DiscussionController
-Route::apiResource('discussions', DiscussionController::class);
-Route::get('projects/{project}/discussions', [DiscussionController::class, 'getDiscussionsByProject']);

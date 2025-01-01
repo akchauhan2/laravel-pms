@@ -7,10 +7,16 @@ use Illuminate\Http\Request;
 
 class DiscussionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
     public function index()
     {
         return response()->json(Discussion::with(['project', 'user'])->get());
     }
+
     public function getDiscussionsByProject($projectId)
     {
         // Fetch discussions related to the specific project
@@ -23,6 +29,7 @@ class DiscussionController extends Controller
 
     public function store(Request $request)
     {
+        $this->middleware('auth');
         $request->validate([
             'title' => 'required|string',
             'content' => 'required|string',
@@ -43,12 +50,12 @@ class DiscussionController extends Controller
 
     public function show($id)
     {
-        $discussion = Discussion::with(['project', 'user'])->findOrFail($id);
-        return response()->json($discussion);
+        return response()->json(Discussion::with(['project', 'user'])->findOrFail($id));
     }
 
     public function update(Request $request, $id)
     {
+        $this->middleware('auth');
         $discussion = Discussion::findOrFail($id);
         $discussion->update($request->all());
         return response()->json(['successFlag' => true, 'message' => 'Updated Successfully', 'data' => $discussion]);
@@ -56,6 +63,7 @@ class DiscussionController extends Controller
 
     public function destroy($id)
     {
+        $this->middleware('auth');
         $discussion = Discussion::findOrFail($id);
         $discussion->delete();
         return response()->json(['successFlag' => true, 'message' => 'Deleted Successfully', 'data' => null], 200); // 204 No Content
