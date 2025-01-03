@@ -9,12 +9,14 @@ use App\Http\Controllers\BugTicketController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ApiController;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | API Routes
+|--------------------------------------------------------------------------
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
@@ -24,8 +26,10 @@ use Illuminate\Support\Facades\Auth;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login/save-token', [AuthController::class, 'saveToken'])->middleware('auth:api');
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
@@ -46,3 +50,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('discussions', DiscussionController::class);
     Route::get('projects/{project}/discussions', [DiscussionController::class, 'getDiscussionsByProject']);
 });
+
+Route::middleware('auth:api')->get('/some-endpoint', [ApiController::class, 'someApiMethod']);

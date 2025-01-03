@@ -30,4 +30,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'api' => [
+        'token' => env('API_TOKEN', 'your_default_token_here'), // Replace with your actual token
+    ],
+
 ];

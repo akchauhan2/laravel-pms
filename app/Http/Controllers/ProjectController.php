@@ -9,14 +9,26 @@ class ProjectController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth:api')->except(['index', 'show']);
     }
 
+    private function truncatedescription($projects)
+    {
+        foreach ($projects as $project) {
+            if (isset($project->description) && strlen($project->description) > 400) {
+                $project->description = substr($project->description, 0, 400) . '...';
+            }
+        }
+        return $projects;
+    }
 
     public function index()
     {
-        return response()->json(Project::all());
+        $projects = Project::all();
+        $projects = $this->truncatedescription($projects);
+        return response()->json(['successFlag' => true, "responseList" => $projects]);
     }
+
 
     public function store(Request $request)
     {
@@ -30,6 +42,7 @@ class ProjectController extends Controller
             return response()->json(['successFlag' => true, 'message' => 'Created Successfully', 'data' => $project], 201); // 201 Created
         }
     }
+
 
     // Show a single project by ID
     public function show($id)

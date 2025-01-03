@@ -9,7 +9,7 @@ class DiscussionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth:api')->except(['index', 'show']);
     }
 
     public function index()
@@ -29,7 +29,6 @@ class DiscussionController extends Controller
 
     public function store(Request $request)
     {
-        $this->middleware('auth');
         $request->validate([
             'title' => 'required|string',
             'content' => 'required|string',
@@ -55,7 +54,6 @@ class DiscussionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $this->middleware('auth');
         $discussion = Discussion::findOrFail($id);
         $discussion->update($request->all());
         return response()->json(['successFlag' => true, 'message' => 'Updated Successfully', 'data' => $discussion]);
@@ -63,7 +61,6 @@ class DiscussionController extends Controller
 
     public function destroy($id)
     {
-        $this->middleware('auth');
         $discussion = Discussion::findOrFail($id);
         $discussion->delete();
         return response()->json(['successFlag' => true, 'message' => 'Deleted Successfully', 'data' => null], 200); // 204 No Content
