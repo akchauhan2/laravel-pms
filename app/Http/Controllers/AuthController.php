@@ -18,7 +18,16 @@ class AuthController extends Controller
             $user->api_token = Str::random(60);
             $user->save();
 
-            return response()->json(['token' => $user->api_token]);
+            // return response()->json(['token' => $user->api_token]);
+            return response()->json([
+                'token' => $user->api_token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    // Add any other user information you need
+                ]
+            ]);
         }
 
         return response()->json(['message' => 'Unauthorized'], 401);

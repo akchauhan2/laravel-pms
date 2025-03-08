@@ -34,4 +34,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class);
     }
+
+    public static function findByToken($token)
+    {
+        return self::where('api_token', $token)->first();
+    }
 }

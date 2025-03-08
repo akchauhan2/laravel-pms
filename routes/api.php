@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::post('user-info', [UserController::class, 'getUserInfoByToken']);
 
     // Project Routes
     Route::apiResource('projects', ProjectController::class);
