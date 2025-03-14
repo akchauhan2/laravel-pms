@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        //get name, id, email
+        $users = User::select('id', 'name', 'email')->get();
+        return response()->json(['successFlag' => true, "responseList" => $users]);
+    }
     // Store a new user
     public function store(Request $request)
     {

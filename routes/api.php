@@ -10,6 +10,7 @@ use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\DashboardController;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -46,10 +47,14 @@ Route::middleware('auth:api')->group(function () {
 
     // User Routes
     Route::post('users', [UserController::class, 'store']);
+    Route::get('users', [UserController::class, 'index']);
 
     // Discussion Routes
     Route::apiResource('discussions', DiscussionController::class);
     Route::get('projects/{project}/discussions', [DiscussionController::class, 'getDiscussionsByProject']);
+
+    // Dashboard Route
+    Route::get('dashboard', [DashboardController::class, 'getDashboardData']);
 });
 
 Route::middleware('auth:api')->get('/some-endpoint', [ApiController::class, 'someApiMethod']);
