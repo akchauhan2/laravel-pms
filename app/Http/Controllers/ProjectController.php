@@ -76,4 +76,33 @@ class ProjectController extends Controller
         $project->delete();
         return response()->json(['successFlag' => true, 'message' => 'Deleted Successfully', 'data' => null], 200); // 204 No Content
     }
+
+    public function search(Request $request)
+    {
+        $query = Project::query();
+
+        if ($request->has('created_by')) {
+            $query->where('created_by', $request->input('created_by'));
+        }
+
+        if ($request->has('created_at')) {
+            $query->whereDate('created_at', $request->input('created_at'));
+        }
+
+        if ($request->has('due_on')) {
+            $query->whereDate('end_date', $request->input('due_on'));
+        }
+
+        if ($request->has('name')) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        $projects = $query->get();
+
+        return response()->json($projects);
+    }
 }

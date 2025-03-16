@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Project Routes
     Route::apiResource('projects', ProjectController::class);
+    Route::post('projects/search', [ProjectController::class, 'search']); // Change to POST
 
     // Task Routes
     Route::apiResource('tasks', TaskController::class);
