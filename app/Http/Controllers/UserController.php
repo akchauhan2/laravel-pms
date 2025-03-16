@@ -13,7 +13,7 @@ class UserController extends Controller
     public function index()
     {
         //get name, id, email
-        $users = User::select('id', 'name', 'email')->get();
+        $users = User::select('id', 'name', 'email', 'avatar')->get();
         return response()->json(['successFlag' => true, "responseList" => $users]);
     }
     // Store a new user
@@ -59,7 +59,26 @@ class UserController extends Controller
         return response()->json([
             'id' => $user->id,
             'name' => $user->name,
-            'email' => $user->email
+            'email' => $user->email,
+            'avatar' => $user->avatar
         ], 200);
+    }
+
+    public function updateAvatar(Request $request, $id)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        if ($request->hasFile('avatar')) {
+            $avatarName = time() . '.' . $request->avatar->extension();
+            $request->avatar->move(public_path('avatars'), $avatarName);
+            $user->avatar = 'avatars/' . $avatarName;
+            $user->save();
+        }
+
+        return response()->json(['message' => 'Avatar updated successfully', 'avatar' => $user->avatar]);
     }
 }

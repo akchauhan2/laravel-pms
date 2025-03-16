@@ -25,7 +25,7 @@ class ProjectController extends Controller
 
     public function index()
     {
-        $projects = Project::with('creator:id,email,name')->get();
+        $projects = Project::with('creator:id,email,name,avatar')->get();
         $projects = $this->truncatedescription($projects);
         return response()->json(['successFlag' => true, "responseList" => $projects]);
     }
@@ -57,7 +57,7 @@ class ProjectController extends Controller
 
     public function show($id)
     {
-        $project = Project::with('creator:id,email,name')->findOrFail($id);
+        $project = Project::with('creator:id,email,name,avatar')->findOrFail($id);
         return response()->json($project);
     }
 
