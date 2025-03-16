@@ -21,6 +21,11 @@ class TaskController extends Controller
     // Store a new task
     public function store(Request $request)
     {
+        // Validate that project_id is present
+        $request->validate([
+            'project_id' => 'required|exists:projects,id'
+        ]);
+
         $task = Task::create($request->all());
         return response()->json($task, 201);
     }
@@ -37,6 +42,20 @@ class TaskController extends Controller
     {
         $task = Task::findOrFail($id);
         $task->update($request->all());
+        return response()->json($task);
+    }
+
+    // Update the status of a task
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string'
+        ]);
+
+        $task = Task::findOrFail($id);
+        $task->status = $request->input('status');
+        $task->save();
+
         return response()->json($task);
     }
 

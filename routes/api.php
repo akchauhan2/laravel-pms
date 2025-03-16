@@ -41,6 +41,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Task Routes
     Route::apiResource('tasks', TaskController::class);
+    Route::patch('tasks/{id}/status', [TaskController::class, 'updateStatus']);
 
     // BugTicket Routes
     Route::apiResource('bugs', BugTicketController::class);
