@@ -15,13 +15,13 @@ class DiscussionController extends Controller
 
     public function index()
     {
-        return response()->json(Discussion::with(['project', 'user'])->get());
+        $discussions = Discussion::with(['project', 'user:id,name,email'])->get();
+        return response()->json($discussions);
     }
 
     public function getDiscussionsByProject($projectId)
     {
-        // Fetch discussions related to the specific project
-        $discussions = Discussion::with(['user'])
+        $discussions = Discussion::with(['user:id,name,email'])
             ->where('project_id', $projectId)
             ->get();
 
@@ -50,7 +50,8 @@ class DiscussionController extends Controller
 
     public function show($id)
     {
-        return response()->json(Discussion::with(['project', 'user'])->findOrFail($id));
+        $discussion = Discussion::with(['project', 'user:id,name,email'])->findOrFail($id);
+        return response()->json($discussion);
     }
 
     public function update(Request $request, $id)
