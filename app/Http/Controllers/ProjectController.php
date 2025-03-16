@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -24,30 +25,40 @@ class ProjectController extends Controller
 
     public function index()
     {
-        $projects = Project::all();
+        $projects = Project::with('creator:id,email,name')->get();
         $projects = $this->truncatedescription($projects);
         return response()->json(['successFlag' => true, "responseList" => $projects]);
     }
 
-
     public function store(Request $request)
     {
-        $data = $request->all();
-        if (isset($data['id'])) {
-            $project = Project::findOrFail($data['id']);
-            $project->update($data);
-            return response()->json(['successFlag' => true, 'message' => 'Updated Successfully', 'data' => $project]);
-        } else {
-            $project = Project::create($data);
-            return response()->json(['successFlag' => true, 'message' => 'Created Successfully', 'data' => $project], 201); // 201 Created
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $user = Auth::guard('api')->user(); // Ensure using 'api' guard
+        if ($user === null) {
+            return response()->json(['message' => 'User not authenticated'], 401);
         }
+
+        $project = new Project();
+        $project->name = $request->name;
+        $project->description = $request->description;
+        $project->status = $request->status;
+        $project->start_date = $request->start_date;
+        $project->end_date = $request->end_date;
+        $project->created_by = $user->id; // Ensure $user is not null before accessing id
+
+        $project->save();
+
+        return response()->json(['successFlag' => true, 'message' => 'Created Successfully', 'data' => $project], 201);
     }
 
-
-    // Show a single project by ID
     public function show($id)
     {
-        return response()->json(Project::findOrFail($id));
+        $project = Project::with('creator:id,email,name')->findOrFail($id);
+        return response()->json($project);
     }
 
     // Update an existing project

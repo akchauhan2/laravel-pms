@@ -17,6 +17,7 @@ class Project extends Model
         'start_date',
         'end_date',
         'status',
+        'created_by',
     ];
 
     public function tasks()
@@ -37,5 +38,10 @@ class Project extends Model
     public function discussions()
     {
         return $this->hasMany(Discussion::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
