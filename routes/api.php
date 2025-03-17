@@ -41,6 +41,7 @@ Route::middleware('auth:api')->group(function () {
     // Task Routes
     Route::apiResource('tasks', TaskController::class);
     Route::patch('tasks/{id}/status', [TaskController::class, 'updateStatus']);
+    Route::get('projects/{projectId}/tasks', [TaskController::class, 'getTasksByProject']); // Add this line
 
     // BugTicket Routes
     Route::apiResource('bugs', BugTicketController::class);
@@ -49,6 +50,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('users', [UserController::class, 'store']);
     Route::get('users', [UserController::class, 'index']);
     Route::post('users/{id}/avatar', [UserController::class, 'updateAvatar']); // Add this line
+    Route::put('users/{id}', [UserController::class, 'update']); // Add this line
 
     // Discussion Routes
     Route::apiResource('discussions', DiscussionController::class);

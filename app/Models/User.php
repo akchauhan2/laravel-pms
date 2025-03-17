@@ -17,13 +17,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'api_token',
         'avatar',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'api_token',
     ];
 
     public function projects()

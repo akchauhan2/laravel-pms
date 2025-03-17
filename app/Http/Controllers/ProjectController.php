@@ -25,9 +25,30 @@ class ProjectController extends Controller
 
     public function index()
     {
-        $projects = Project::with('creator:id,email,name,avatar')->get();
+        $projects = Project::with('creator')
+            ->withCount(['tasks', 'tasks as completed_tasks_count' => function ($query) {
+                $query->where('status', 'completed');
+            }])->get();
+
         $projects = $this->truncatedescription($projects);
-        return response()->json(['successFlag' => true, "responseList" => $projects]);
+
+        return response()->json([
+            'successFlag' => true,
+            'responseList' => $projects->map(function ($project) {
+                return [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                    'description' => $project->description,
+                    'status' => $project->status,
+                    'start_date' => $project->start_date,
+                    'end_date' => $project->end_date,
+                    'created_by' => $project->created_by,
+                    'creator' => $project->creator, // Include creator details
+                    'totalTasks' => $project->tasks_count,
+                    'completedTasks' => $project->completed_tasks_count,
+                ];
+            }),
+        ]);
     }
 
     public function store(Request $request)
@@ -57,7 +78,7 @@ class ProjectController extends Controller
 
     public function show($id)
     {
-        $project = Project::with('creator:id,email,name,avatar')->findOrFail($id);
+        $project = Project::with('creator')->findOrFail($id);
         return response()->json($project);
     }
 

@@ -12,8 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        //get name, id, email
-        $users = User::select('id', 'name', 'email', 'avatar')->get();
+        $users = User::all();
         return response()->json(['successFlag' => true, "responseList" => $users]);
     }
     // Store a new user
@@ -56,12 +55,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Invalid token'], 401);
         }
 
-        return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'avatar' => $user->avatar
-        ], 200);
+        return response()->json(["successFlag" => true, "user" => $user], 200);
     }
 
     public function updateAvatar(Request $request, $id)
@@ -80,5 +74,34 @@ class UserController extends Controller
         }
 
         return response()->json(['message' => 'Avatar updated successfully', 'avatar' => $user->avatar]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'sometimes|string|min:8|confirmed'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::findOrFail($id);
+
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json($user, 200);
     }
 }

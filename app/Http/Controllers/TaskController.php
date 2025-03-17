@@ -11,7 +11,7 @@ class TaskController extends Controller
     // Get all tasks
     public function index()
     {
-        $tasks = Task::with(['project', 'assignedUser:id,name,email,avatar'])->get();
+        $tasks = Task::with(['project', 'assignedUser'])->get();
         return response()->json([
             'successFlag' => true,
             'responseList' => $tasks
@@ -33,7 +33,7 @@ class TaskController extends Controller
     // Show a single task by ID
     public function show($id)
     {
-        $task = Task::with(['project', 'assignedUser:id,name,email,avatar'])->findOrFail($id);
+        $task = Task::with(['project', 'assignedUser'])->findOrFail($id);
         return response()->json($task);
     }
 
@@ -57,6 +57,16 @@ class TaskController extends Controller
         $task->save();
 
         return response()->json($task);
+    }
+
+    // Get all tasks by project ID
+    public function getTasksByProject($projectId)
+    {
+        $tasks = Task::where('project_id', $projectId)->with(['project', 'assignedUser'])->get();
+        return response()->json([
+            'successFlag' => true,
+            'responseList' => $tasks
+        ]);
     }
 
     // Delete a task
