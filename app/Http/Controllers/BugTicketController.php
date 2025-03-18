@@ -21,8 +21,10 @@ class BugTicketController extends Controller
     {
         // Validate incoming request
         $request->validate([
+            'title' => 'required|string|max:255', // Validate title
             'description' => 'required|string',
             'status' => 'required|string',
+            'priority' => 'required|in:low,medium,high', // Validate priority as enum
             'project_id' => 'required|exists:projects,id', // Validate project_id exists in the projects table
             'assigned_to' => 'nullable|exists:users,id', // Validate assigned_to exists in the users table
             'screenshot' => 'nullable|string',
@@ -49,8 +51,10 @@ class BugTicketController extends Controller
 
         // Validate incoming request
         $request->validate([
+            'title' => 'nullable|string|max:255', // Validate title
             'description' => 'nullable|string',
             'status' => 'nullable|string',
+            'priority' => 'nullable|in:low,medium,high', // Validate priority as enum
             'project_id' => 'nullable|exists:projects,id',
             'assigned_to' => 'nullable|exists:users,id',
             'screenshot' => 'nullable|string',

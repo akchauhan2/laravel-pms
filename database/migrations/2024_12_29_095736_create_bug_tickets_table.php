@@ -16,11 +16,13 @@ class CreateBugTicketsTable extends Migration
     {
         Schema::create('bug_tickets', function (Blueprint $table) {
             $table->id(); // This automatically creates 'bug_id' as an auto-incrementing primary key.
+            $table->string('title'); // Add title field
             $table->string('description');
             $table->string('status');
+            $table->enum('priority', ['low', 'medium', 'high']); // Add priority field as enum
             $table->unsignedBigInteger('project_id');
-            $table->unsignedBigInteger('assigned_to');
-            $table->string('screenshot');
+            $table->unsignedBigInteger('assigned_to')->nullable();
+            $table->string('screenshot')->nullable();
             $table->timestamps();
         });
     }
