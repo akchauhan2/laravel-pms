@@ -13,7 +13,7 @@ class BugTicketController extends Controller
     public function index()
     {
         $bugTickets = BugTicket::with(['project', 'assignedUser'])->get(); // Eager load related models
-        return response()->json($bugTickets);
+        return response()->json(["successFlag" => true, "responseList" => $bugTickets]);
     }
 
     // Store a new bug ticket

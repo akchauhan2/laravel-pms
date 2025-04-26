@@ -16,7 +16,7 @@ class DiscussionController extends Controller
     public function index()
     {
         $discussions = Discussion::with(['project', 'user'])->get();
-        return response()->json($discussions);
+        return response()->json(["successFlag" => true, "responseList" => $discussions]);
     }
 
     public function getDiscussionsByProject($projectId)
