@@ -1,10 +1,22 @@
+migration
+```bash
+php artisan migrate
+```
+seed
+```bash
+php artisan db:seed
+```
+install dependencies
+```bash
+npm install
+```
 start this application with the command below
 ```bash
 php artisan serve
 ```
 start command with ports 8000 and 8001
 ```bash
-php artisan serve --host=127.0.0.1 --port=8080
+php artisan serve --host=127.0.0.1 --port=**8080**
 ```
 
 test user credentials
