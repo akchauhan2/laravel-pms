@@ -30,7 +30,9 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:api')
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        $user = User::where('api_token', $request->bearerToken())->first();
+
+        return $user;
     });
     Route::post('user-info', [UserController::class, 'getUserInfoByToken']);
 

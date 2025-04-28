@@ -25,7 +25,7 @@ class DiscussionController extends Controller
             ->where('project_id', $projectId)
             ->get();
 
-        return response()->json($discussions);
+        return response()->json(["successFlag" => true, "responseList" => $discussions]);
     }
 
     public function store(Request $request)
