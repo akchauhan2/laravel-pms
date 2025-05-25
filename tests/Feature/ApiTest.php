@@ -11,13 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ApiTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
-
-
-    // run a sql query to get all the users at this point
-    // $sql = "select * from users";
-    // $users = DB::select($sql);
-    // Log::info('users before delete: ' . json_encode($users));
+    use  RefreshDatabase,  WithFaker;
 
     /**
      * Test user registration.
@@ -246,5 +240,78 @@ class ApiTest extends TestCase
             ->deleteJson('/api/tasks/' . $taskId);
         $response->assertStatus(204);
         dump('✅ Task- deleting the task');
+    }
+
+    public function sample_discussion($projectId, $userId)
+    {
+        return [
+            'title' => $this->faker->sentence(),
+            'content' => $this->faker->paragraphs(2, true),
+            'project_id' => $projectId,
+            'user_id' => $userId,
+        ];
+    }
+
+    public function test_discussion_crud()
+    {
+        $password = 'password';
+        $user = User::factory()->create(["password" => bcrypt($password)]);
+        $loginResponse = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => $password
+        ]);
+        $token = $loginResponse->json('token');
+        $userID = $loginResponse->json('user')['id'];
+
+        dump('✅ user creation of a discussion : ' . $userID);
+        // Create a project for the discussion
+        $projectResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/projects', $this->sample_project($userID));
+        $projectResponse->assertStatus(201);
+        $projectId = $projectResponse->json('data')['id'];
+        dump('✅ project creation of a discussion : ' . $projectId);
+        // Create a discussion
+        $discussionData = $this->sample_discussion($projectId, $userID);
+        $createResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/discussions', $discussionData);
+        $createResponse->assertStatus(201)
+            ->assertJsonStructure(['successFlag', 'message', 'data']);
+        $discussionId = $createResponse->json('data')['id'];
+        dump('✅ Discussion- creation of a discussion');
+
+        // Read the discussion
+        $readResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/discussions/' . $discussionId);
+        $readResponse->assertStatus(200)
+            ->assertJson(['id' => $discussionId]);
+        dump('✅ Discussion- reading the discussion');
+
+        // Update the discussion
+        $updatedTitle = $this->faker->sentence();
+        $updateResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson('/api/discussions/' . $discussionId, [
+                'title' => $updatedTitle,
+                'content' => $this->faker->paragraphs(2, true)
+            ]);
+        $updateResponse->assertStatus(200)
+            ->assertJson([
+                'successFlag' => true,
+                'message' => 'Updated Successfully',
+                'data' => [
+                    'title' => $updatedTitle,
+                ],
+            ]);
+        dump('✅ Discussion- updating the discussion');
+
+        // Delete the discussion
+        $deleteResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson('/api/discussions/' . $discussionId);
+        $deleteResponse->assertStatus(200)
+            ->assertJson([
+                'successFlag' => true,
+                'message' => 'Deleted Successfully',
+                'data' => null
+            ]);
+        dump('✅ Discussion- deleting the discussion');
     }
 }
