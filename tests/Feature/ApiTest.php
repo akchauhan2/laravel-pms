@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ApiTest extends TestCase
 {
-    use   /*  RefreshDatabase, */  WithFaker;
+    use RefreshDatabase, WithFaker;
 
 
     // run a sql query to get all the users at this point
