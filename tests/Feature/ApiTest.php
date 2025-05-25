@@ -6,16 +6,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ApiTest extends TestCase
 {
-    use   RefreshDatabase,    WithFaker;
+    use RefreshDatabase, WithFaker;
 
-    /**
-     * Test user registration.
-     */
+    /**     * Test user registration. */
     public function test_user_can_register()
     {
         // Login as the seeded user
@@ -36,11 +32,7 @@ class ApiTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonStructure(['id', 'name', 'email']);
     }
-
-
-    /**
-     * Test user login.
-     */
+    /**     * Test user login. */
     public function test_user_can_login()
     {
         // Login as the seeded user
@@ -78,9 +70,7 @@ class ApiTest extends TestCase
             "created_by" => $userID
         ];
     }
-    /**
-     * Test project CRUD operations.
-     */
+    /**     * Test project CRUD operations. */
     public function test_project_crud()
     {
         $password = 'password';
@@ -144,9 +134,7 @@ class ApiTest extends TestCase
         dump('✅ Project- Deleting of the project');
     }
 
-    /**
-     * Test task CRUD operations.
-     */
+    /**     * Test task CRUD operations. */
     public function sample_task($projectId, $userID, $status = 'in_progress')
     {
         return [
