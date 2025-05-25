@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class ApiTest extends TestCase
 {
-    use  RefreshDatabase,  WithFaker;
+    use   RefreshDatabase,    WithFaker;
 
     /**
      * Test user registration.
@@ -33,7 +33,6 @@ class ApiTest extends TestCase
                 'password' => 'password',
                 'password_confirmation' => 'password',
             ]);
-        Log::info('response response: ' . json_encode($response));
         $response->assertStatus(201)
             ->assertJsonStructure(['id', 'name', 'email']);
     }
@@ -178,8 +177,6 @@ class ApiTest extends TestCase
         $token = $loginResponse->json('token');
         // Log::info('token: ' . $token);
         $userID = $loginResponse->json('user')['id'];
-        Log::info('userID: ' . $userID);
-
 
         // Create a project
         $project = $this->withHeader('Authorization', 'Bearer ' . $token)
@@ -263,13 +260,12 @@ class ApiTest extends TestCase
         $token = $loginResponse->json('token');
         $userID = $loginResponse->json('user')['id'];
 
-        dump('✅ user creation of a discussion : ' . $userID);
         // Create a project for the discussion
         $projectResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson('/api/projects', $this->sample_project($userID));
         $projectResponse->assertStatus(201);
         $projectId = $projectResponse->json('data')['id'];
-        dump('✅ project creation of a discussion : ' . $projectId);
+
         // Create a discussion
         $discussionData = $this->sample_discussion($projectId, $userID);
         $createResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
@@ -313,5 +309,76 @@ class ApiTest extends TestCase
                 'data' => null
             ]);
         dump('✅ Discussion- deleting the discussion');
+    }
+
+    public function sample_bug_ticket($projectId, $userId, $priority = 'medium', $status = 'open')
+    {
+        return [
+            'title' => $this->faker->streetName(),
+            'description' => $this->faker->streetName(),
+            'status' => $status,
+            'priority' => $priority,
+            'project_id' => $projectId,
+            'assigned_to' => $userId,
+            'screenshot' => null,
+        ];
+    }
+
+    public function test_bug_ticket_crud()
+    {
+        $password = 'password';
+        $user = User::factory()->create(["password" => bcrypt($password)]);
+        $loginResponse = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => $password
+        ]);
+        $token = $loginResponse->json('token');
+        $userID = $loginResponse->json('user')['id'];
+
+        // Create a project for the bug ticket
+        $projectResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/projects', $this->sample_project($userID));
+        $projectResponse->assertStatus(201);
+        $projectId = $projectResponse->json('data')['id'];
+
+        // Create a bug ticket
+        $bugData = $this->sample_bug_ticket($projectId, $userID);
+        $createResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->postJson('/api/bugs', $bugData);
+        $createResponse->assertStatus(201)
+            ->assertJsonStructure(['id', 'title', 'description', 'status', 'priority', 'project_id', 'assigned_to']);
+        $bugId = $createResponse->json('id');
+        dump('✅ BugTicket- creation of a bug ticket');
+
+        // Read the bug ticket
+        $readResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/bugs/' . $bugId);
+        $readResponse->assertStatus(200)
+            ->assertJson(['id' => $bugId]);
+        dump('✅ BugTicket- reading the bug ticket');
+
+        // Update the bug ticket
+        $updatedTitle = $this->faker->sentence();
+        $updateResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->putJson('/api/bugs/' . $bugId, [
+                'title' => $updatedTitle,
+                'description' => $this->faker->streetName(),
+                'priority' => 'high',
+                'status' => 'closed',
+            ]);
+        $updateResponse->assertStatus(200)
+            ->assertJson([
+                'id' => $bugId,
+                'title' => $updatedTitle,
+                'priority' => 'high',
+                'status' => 'closed',
+            ]);
+        dump('✅ BugTicket- updating the bug ticket');
+
+        // Delete the bug ticket
+        $deleteResponse = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->deleteJson('/api/bugs/' . $bugId);
+        $deleteResponse->assertStatus(204);
+        dump('✅ BugTicket- deleting the bug ticket');
     }
 }
