@@ -197,7 +197,79 @@ This Laravel-based Project Management System (PMS) is designed to streamline and
   - Caching, query optimization, queue management.
 - **How to handle errors?**
   - Exception handling, logging, custom error pages.
+ 
+# How Laravel Handles Queries Using Eloquent ORM
 
----
+Laravel’s Eloquent ORM (Object Relational Mapper) provides an easy and expressive way to interact with your database using PHP objects and methods, rather than writing raw SQL queries. Here’s how it works:
 
-Feel free to use this guide for your viva preparation. If you need more details on any point or want code samples, let me know!
+## 1. Basic Queries
+- **Fetching all records:**
+  ```php
+  $projects = Project::all();
+  ```
+- **Finding a record by ID:**
+  ```php
+  $user = User::find(1);
+  ```
+- **Adding a new record:**
+  ```php
+  $task = new Task;
+  $task->name = 'Design UI';
+  $task->save();
+  ```
+
+## 2. Query Builder Methods
+- **Filtering records:**
+  ```php
+  $tasks = Task::where('status', 'pending')->get();
+  ```
+- **Ordering results:**
+  ```php
+  $users = User::orderBy('created_at', 'desc')->get();
+  ```
+
+## 3. Relationships and JOINs
+- **hasMany (One-to-Many):**
+  ```php
+  // In Project model:
+  public function tasks() {
+      return $this->hasMany(Task::class);
+  }
+  // Usage:
+  $project = Project::find(1);
+  $tasks = $project->tasks; // Eloquent performs a JOIN
+  ```
+- **belongsTo (Inverse):**
+  ```php
+  // In Task model:
+  public function project() {
+      return $this->belongsTo(Project::class);
+  }
+  // Usage:
+  $task = Task::find(1);
+  $project = $task->project;
+  ```
+- **Many-to-Many:**
+  ```php
+  // In User model:
+  public function projects() {
+      return $this->belongsToMany(Project::class);
+  }
+  // Usage:
+  $user = User::find(1);
+  $projects = $user->projects;
+  ```
+
+## 4. Custom Queries
+- You can also use raw SQL if needed:
+  ```php
+  $results = DB::select('SELECT * FROM tasks WHERE status = ?', ['pending']);
+  ```
+
+## 5. Benefits of Eloquent
+- Simplifies database operations.
+- Handles relationships and JOINs automatically.
+- Protects against SQL injection.
+- Makes code readable and maintainable.
+
+Eloquent is a key reason why Laravel is popular for rapid and secure web application development.
